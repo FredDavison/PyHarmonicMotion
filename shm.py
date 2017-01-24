@@ -1,6 +1,10 @@
-from Tkinter import *
+from __future__ import division
+
+import Tkinter as tk
 import time
 import math
+
+PI = math.pi
 
 
 def animation(v):
@@ -14,21 +18,31 @@ def animation(v):
 
 
 if __name__ == '__main__':
-    root = Tk()
-    canvas = Canvas(root, width=400, height = 400)
+    root = tk.Tk()
+    canvas = tk.Canvas(root, width=400, height = 400)
     canvas.pack()
-    shape1 = canvas.create_oval(180, 180, 220, 220, outline='white', fill='blue', tag='shape1')
 
-    max_v = 6 # pixels per second
+    start_x = 200
+    start_y = 200
+    shape1 = canvas.create_oval(start_x-20, start_y-20, start_x+20, start_y+20, outline='white', fill='blue', tag='shape1')
+
+    A = 100 # amplitude pixels
+    k = 1
+    m = 10
+    ang_freq = (k / m) ** (-1 / 2)
+    T = 2 * PI * (k / m) ** ang_freq
     dx = 0
-    dy = 0
+    prev_x = start_x
+
     start_t = time.time()
     while True:
-        canvas.move('shape1', dx, dy)
+        t = time.time() - start_t
+        x = A * math.cos(ang_freq * t) + start_x
+        dx = x - prev_x
+        print t, ang_freq * t, x, dx
         canvas.after(20)
+        canvas.move('shape1', dx, 0)
         canvas.update()
-        elapsed_t = time.time() - start_t
-        dx = math.cos((elapsed_t % 5) / 5 * 2 * math.pi) * max_v
-        print dx
+        prev_x = x
 
     root.mainloop()
