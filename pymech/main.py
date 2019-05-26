@@ -1,16 +1,72 @@
 
 import time
 
-from pymech import global_settings
-from pymech.graphics import start_event_loop
+import numpy as np
+
+from pymech.settings import global_settings
+from pymech.graphics import animate_entities
 
 
 GRAV = 9.81
+VGRAV = np.array([0., 0., 9.81])
 SCALE = global_settings['physics'].getint('pixels_per_metre')
+
+
+class PhysicsObject:
+    def __init__(self, position, mass):
+        self.pix_per_metre = SCALE
+        self.position = np.array(position)
+        self.velocity = np.array([0, 0, 0])
+        self.acceleration = np.array([0, 0, 0])
+        self.mass = mass
+
+    def calculate_motion(self, dt):
+        self.velocity = self.velocity + (VGRAV * dt)
+        pos_delta = (self.velocity * dt) * self.pix_per_metre
+        self.position = self.position + pos_delta
+        return pos_delta
+
+
+class DisplayObject:
+    def __init__(self, physics_object, draw_object):
+        self.physics = physics_object
+        self.drawer = draw_object
+
+        self.last_update = None
+        self.shape = None
+
+    def update(self, canvas):
+        dt = time.time() - self.last_update
+        position_delta = self.physics.calculate_motion(dt)
+        self.last_update = time.time()
+        self._move(position_delta, canvas)
+        canvas.update()
+
+    def initial_draw(self, canvas):
+        if self.shape:
+            raise AttributeError("shape attribute already exists, initial_draw shouldn't be being called")
+        pos = self.physics.position
+        rad = 10
+        self.shape = canvas.create_oval(pos[0]-rad, pos[2]-rad,
+                                        pos[0]+rad, pos[2]+rad,
+                                        outline='white', fill='blue')
+        self.last_update = time.time()
+
+    def _move(self, position, canvas):
+        canvas.move(self.shape, position[0], position[2])
+        canvas.tag_raise(self.shape)
 
 
 class Entity:
     def __init__(self):
+        self.scale = SCALE
+        self.gravity = GRAV
+
+        self.position = np.array([0, 0, 0])
+        self.velocity = np.array([0, 0, 0])
+        self.acceleration = np.array([0, 0, 0])
+        self.mass = None
+
         self.shape = None
         self.last_update = None
 
@@ -147,7 +203,7 @@ def main():
                                 spring_c=15,
                                 mass=20)
     entities = [trolley, mass]
-    start_event_loop(entities)
+    animate_entities(entities)
 
 
 if __name__ == '__main__':

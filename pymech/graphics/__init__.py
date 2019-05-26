@@ -2,13 +2,13 @@
 import time
 import tkinter as tk
 
-from pymech import global_settings
+from pymech.settings import global_settings
 
 
 SETTINGS = global_settings['tkinter']
 
 
-def start_event_loop(entities):
+def animate_entities(entities):
     """Initialise and provide tkinter root."""
 
     height = SETTINGS.getint('height')
@@ -30,7 +30,7 @@ def start_event_loop(entities):
         text_time = canvas.create_text(width / 2, 10, text=f'{dt:.2e}')
 
         update_entities(canvas, entities)
-        canvas.after(20)
+        canvas.after(1000 // 60)
         canvas.delete(text_time)
         last_time = time.time()
 
@@ -43,6 +43,5 @@ def draw_entities(canvas, entities):
 
 def update_entities(canvas, entities):
     for entity in entities:
-        entity.calc_movement()
-        entity.move(canvas)
+        entity.update(canvas)
     canvas.update()
