@@ -1,20 +1,14 @@
 
-import numpy as np
-
-from pymech import Entity, PhysicsObject, DisplayObject, animate_entities
-
-
-class FreeMass(PhysicsObject):
-    def __init__(self, position):
-        super().__init__(self)
+from pymech import DisplayEntity
+from pymech.physics import PhysicsObject
+from pymech.graphics import Circle, animate_entities
 
 
 def main():
-    mass = PhysicsObject(position=[400, 0, 0],
-                         mass=10)
-    display = DisplayObject(mass, None)
+    mass = PhysicsObject(position=[400, 0, 0], mass=10)
+    circle = Circle(radius=10)
+    display = DisplayEntity(physics=mass, appearance=circle)
     animate_entities([display])
-
 
 
 if __name__ == '__main__':
