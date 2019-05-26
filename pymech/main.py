@@ -1,7 +1,6 @@
 
 import time
-
-import numpy as np
+from pymech import graphics
 
 
 GRAV = 9.81
@@ -10,15 +9,19 @@ GRAV = 9.81
 class DisplayEntity:
     def __init__(self, physics, appearance):
         self.physics = physics
-        self.appearance = appearance
+        self.drawn_objects = [appearance] + [graphics.Spring(s)
+                                             for s in self.physics.springs]
         self.last_update = None
 
     def initial_draw(self, canvas):
-        self.appearance.initial_draw(self.physics.position, canvas)
+        for d in self.drawn_objects:
+            d.initial_draw(canvas, self.physics.position)
         self.last_update = time.time()
 
     def update(self, canvas):
         dt = time.time() - self.last_update
         position_delta = self.physics.calculate_motion(dt)
         self.last_update = time.time()
-        self.appearance.move(position_delta, canvas)
+
+        for d in self.drawn_objects:
+            d.move(canvas, position_delta)

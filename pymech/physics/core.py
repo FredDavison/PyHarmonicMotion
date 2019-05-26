@@ -15,7 +15,7 @@ class PhysicsObject:
         self.pix_per_metre = SCALE
         self.position = np.array(position)
         self.velocity = np.array([0, 0, 0])
-        self.acceleration = np.array([0, 0, 0])
+        self.acceleration = np.array([0, 0, 0]) # not used
         self.mass = mass
         self.springs = []
         self.dampers = []
@@ -26,8 +26,8 @@ class PhysicsObject:
 
     @degrees_of_freedom.setter
     def degrees_of_freedom(self, dofs):
+        # validation maybe
         self._dof = np.asarray(dofs, dtype=bool)
-
 
     def add_spring(self, constraint):
         self.springs.append(constraint)
@@ -37,9 +37,10 @@ class PhysicsObject:
 
     def resolve_external_forces(self):
         f_grav = self.mass * GRAV
+        f_inertial = -self.acceleration * self.mass
         f_spring = sum([c.resistance(self.position) for c in self.springs])
         f_damping = sum([d.resistance(self.velocity) for d in self.dampers])
-        return sum([f_grav, f_spring, f_damping])
+        return sum([f_grav, f_inertial, f_spring, f_damping])
 
     def calculate_motion(self, dt):
         external_force = self.resolve_external_forces()
