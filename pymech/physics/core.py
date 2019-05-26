@@ -37,10 +37,9 @@ class PhysicsObject:
 
     def resolve_external_forces(self):
         f_grav = self.mass * GRAV
-        f_inertial = -self.acceleration * self.mass
         f_spring = sum([c.resistance(self.position) for c in self.springs])
         f_damping = sum([d.resistance(self.velocity) for d in self.dampers])
-        return sum([f_grav, f_inertial, f_spring, f_damping])
+        return sum([f_grav, f_spring, f_damping])
 
     def calculate_motion(self, dt):
         external_force = self.resolve_external_forces()
@@ -48,4 +47,5 @@ class PhysicsObject:
         self.velocity = self.velocity + a * dt
         pos_delta = (self.velocity * dt) * self.pix_per_metre
         self.position = self.position + pos_delta
+        self.acceleration = a
         return pos_delta

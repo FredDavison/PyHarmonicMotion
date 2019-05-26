@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class LinearSpring:
     """Provides spring force equal to displacement times stiffness."""
 
@@ -10,6 +11,20 @@ class LinearSpring:
     def resistance(self, target_position):
         displacement = self.position - target_position
         return displacement * self.k
+
+
+class AxialSpring:
+    """Provides linear spring force in direction of its axial extension."""
+
+    def __init__(self, position, stiffness):
+        self.position = position
+        self.k = np.asarray(stiffness)
+
+    def resistance(self, target_position):
+        displacement = self.position - target_position
+        extension = np.linalg.norm(displacement)
+        resistance = extension * self.k
+        return resistance * displacement
 
 
 class ViscousDamper:
