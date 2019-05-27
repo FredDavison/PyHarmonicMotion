@@ -30,7 +30,7 @@ class PositionScaledObject:
 
     @property
     def screen_coords(self):
-        return self.position * self.pix_per_metre
+        return self._screen_coords
 
 
 class DisplayEntity:
