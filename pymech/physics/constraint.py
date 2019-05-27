@@ -1,11 +1,18 @@
+
 import numpy as np
 
+from pymech.main import PositionScaledObject
+from pymech.settings import global_settings
 
-class LinearSpring:
+
+SCALE = global_settings['physics'].getint('pixels_per_metre')
+
+
+class LinearSpring(PositionScaledObject):
     """Provides spring force equal to displacement times stiffness."""
 
     def __init__(self, position, stiffness):
-        self.position = position
+        super().__init__(position)
         self.k = np.asarray(stiffness)
 
     def resistance(self, target_position):
@@ -13,11 +20,11 @@ class LinearSpring:
         return displacement * self.k
 
 
-class AxialSpring:
+class AxialSpring(PositionScaledObject):
     """Provides linear spring force in direction of its axial extension."""
 
     def __init__(self, position, stiffness):
-        self.position = position
+        super().__init__(position)
         self.k = np.asarray(stiffness)
 
     def resistance(self, target_position):

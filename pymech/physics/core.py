@@ -2,18 +2,18 @@
 import numpy as np
 
 from pymech.settings import global_settings
+from pymech.main import PositionScaledObject
 
 
 GRAV = np.array([0., 0., 9.81])
 SCALE = global_settings['physics'].getint('pixels_per_metre')
 
 
-class PhysicsObject:
+class PhysicsObject(PositionScaledObject):
     def __init__(self, position, mass):
+        super().__init__(position)
         self._dof = None
         self.degrees_of_freedom = np.array([True, True, True], dtype=bool)
-        self.pix_per_metre = SCALE
-        self.position = np.array(position)
         self.velocity = np.array([0, 0, 0])
         self.acceleration = np.array([0, 0, 0]) # not used
         self.mass = mass
@@ -45,7 +45,7 @@ class PhysicsObject:
         external_force = self.resolve_external_forces()
         a = external_force / self.mass * self._dof
         self.velocity = self.velocity + a * dt
-        pos_delta = (self.velocity * dt) * self.pix_per_metre
+        pos_delta = (self.velocity * dt)
         self.position = self.position + pos_delta
         self.acceleration = a
         return pos_delta
